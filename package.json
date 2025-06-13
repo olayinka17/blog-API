@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js"
   },
   "author": "Olaniyi Olayinka",
