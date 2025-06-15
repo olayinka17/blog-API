@@ -11,7 +11,7 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
     {
       $lookup: {
         from: "users",
-        let: { $authorId: "$author" },
+        let: { authorId: "$author" },
         pipeline: [
           { $match: { $expr: { $eq: ["$_id", "$$authorId"] } } },
           {
