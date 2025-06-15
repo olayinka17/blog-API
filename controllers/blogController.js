@@ -10,8 +10,18 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
     {
       $lookup: {
         from: "users",
-        localField: "author",
-        foreignField: "_id",
+        let: { $authorId: "$author" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$_id", "$$authorId"] } } },
+          {
+            $project: {
+              first_name: 1,
+              _id: 1,
+            },
+          },
+        ],
+        // localField: "author",
+        // foreignField: "_id",
         as: "authorDetails",
       },
     },
