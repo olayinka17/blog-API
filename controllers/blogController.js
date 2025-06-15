@@ -5,7 +5,9 @@ const CustomError = require("../utils/CustomError");
 
 const getAllBlogs = CatchAsync(async (req, res, next) => {
   // let filter = filter;
-  // const matchFilter = req.filter || {};
+  // if (req.filter) {
+  //   const matchFilter = req.filter || {};
+  // }
   const features = new APIFeatures(req.query).filter().sort().paginate();
   const blogs = await Blog.aggregate([
     {
