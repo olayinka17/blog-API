@@ -5,7 +5,7 @@ const CustomError = require("../utils/CustomError");
 
 const getAllBlogs = CatchAsync(async (req, res, next) => {
   // let filter = filter;
-  const matchFilter = req.filter || {};
+  // const matchFilter = req.filter || {};
   const features = new APIFeatures(req.query).filter().sort().paginate();
   const blogs = await Blog.aggregate([
     {
@@ -27,7 +27,7 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
       },
     },
     { $unwind: "$authorDetails" },
-    { $match: matchFilter },
+    // { $match: matchFilter },
     ...features.pipeline,
   ]);
   console.log([
@@ -35,7 +35,7 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
       $lookup: {},
     },
     { $unwind: "$authorDetails" },
-    { $match: matchFilter },
+    // { $match: matchFilter },
     ...features.pipeline,
   ]);
   res.status(200).json({
