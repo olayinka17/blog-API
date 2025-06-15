@@ -8,12 +8,25 @@ class APIFeatures {
     const excludedFields = ["sort", "fields", "page", "limit"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
+    const match = {};
+
     if (queryObj.author) {
-      this.pipeline.push({
-        $match: { "authorDetails.first_name": queryObj.author },
-      });
+      match["authorDetails.first_name"] = queryObj.author;
     }
 
+    if (queryObj.title) {
+      match.title = queryObj.title;
+    }
+    if (queryObj.state) {
+      match.state = queryObj.state;
+    }
+    if (queryObj.tags) {
+      match.tags = queryObj.tags;
+    }
+
+    if (Object.keys(match).length > 0) {
+      this.pipeline.push({ $match: match });
+    }
     return this;
   }
   sort() {
