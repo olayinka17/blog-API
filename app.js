@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/v1/blogs", BlogRouter);
 app.use("/api/v1/users", UserRouter);
-app.get("/api/v1/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("welcome to the home API");
 });
 
