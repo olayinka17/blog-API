@@ -30,6 +30,14 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
     { $match: matchFilter },
     ...features.pipeline,
   ]);
+  console.log([
+    {
+      $lookup: {},
+    },
+    { $unwind: "$authorDetails" },
+    { $match: matchFilter },
+    ...features.pipeline,
+  ]);
   res.status(200).json({
     status: "success",
     sum: blogs.length,
