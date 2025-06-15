@@ -1,27 +1,34 @@
 class APIFeatures {
-  constructor(query, queryString) {
-    this.query = query;
+  constructor(queryString) {
     this.queryString = queryString;
+    this.pipeline = [];
   }
   filter() {
     const queryObj = { ...this.queryString };
     const excludedFields = ["sort", "fields", "page", "limit"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    this.query = this.query.find(queryObj);
+    if (queryObj.author) {
+      this.pipeline.push({
+        $match: { "authorDetails.first_name": queryObj.author },
+      });
+    }
+
     return this;
   }
   sort() {
-    let sortValue = this.queryString;
-    if (Array.isArray(sortValue)) {
-      sortValue = sortValue.join(",");
-    }
+    if (this.queryString.sort) {
+      const sortBy = this.queryString.sort.split(",").join(" ");
+      const sortObj = {};
 
-    if (typeof sortValue === "string") {
-      const sortBy = sortValue.split(",").join(" ");
-      this.query = this.query.sort(sortBy);
+      sortBy.split(" ").forEach((field) => {
+        sortObj[field] = 1;
+      });
+      this.pipeline.push({ $sort: sortObj });
     } else {
-      this.query = this.query.sort("read_count reading_time timeStamp");
+      this.pipeline.push({
+        $sort: { timeStamp: -1, read_count: -1, reading_time: 1 },
+      });
     }
 
     return this;
@@ -31,7 +38,7 @@ class APIFeatures {
     const limit = this.queryString.limit * 1 || 20;
     const skip = (page - 1) * limit;
 
-    this.query = this.query.skip(skip).limit(limit);
+    this.pipeline.push({ $skip: skip }, { $limit: limit });
 
     return this;
   }

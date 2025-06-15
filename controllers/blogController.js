@@ -5,12 +5,19 @@ const CustomError = require("../utils/CustomError");
 
 const getAllBlogs = CatchAsync(async (req, res, next) => {
   // let filter = filter;
-  const features = new APIFeatures(Blog.find(filter), req.query)
-    .filter()
-    .sort()
-    .paginate();
-  const blogs = await features.query;
-
+  const features = new APIFeatures(req.query).filter().sort().paginate();
+  const blogs = await Blog.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "author",
+        foreignField: "_id",
+        as: "authorDetails",
+      },
+    },
+    { $unwind: "$authorDetails" },
+    ...features.pipeline,
+  ]);
   res.status(200).json({
     status: "success",
     sum: blogs.length,
