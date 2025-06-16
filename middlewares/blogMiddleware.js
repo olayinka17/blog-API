@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const setAuthorIds = (req, res, next) => {
   const tasksInfo = req.body;
   if (!tasksInfo.author) tasksInfo.author = req.user.id;
@@ -5,11 +6,11 @@ const setAuthorIds = (req, res, next) => {
 };
 
 const getMyBlogs = (req, res, next) => {
-  req.filter = { authorDetails: req.user.id };
+  req.filter = { author: req.user.id };
   next();
 };
 const getBlogs = (req, res, next) => {
-  filter = { state: { $ne: "draft" } };
+  req.filter = { state: { $ne: "draft" } };
   next();
 };
 module.exports = {

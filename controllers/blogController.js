@@ -24,14 +24,26 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
         as: "authorDetails",
       },
     },
-    { $unwind: "$authorDetails" },
+    // { $unwind: "$authorDetails" },
+    { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
   ];
 
-  if (matchFilter && Object.keys(matchFilter).length > 0) {
+  // if (Object.keys(matchFilter).length) {
+  //   pipeline.push({ $match: matchFilter });
+  // }
+  if (matchFilter && matchFilter.author) {
+    pipeline.push({
+      $match: {
+        $expr: {
+          $eq: ["$author", { $toObjectId: matchFilter.author }],
+        },
+      },
+    });
+  } else {
     pipeline.push({ $match: matchFilter });
   }
   pipeline.push(...features.pipeline);
-
+  console.log(matchFilter);
   const blogs = await Blog.aggregate(pipeline);
   res.status(200).json({
     status: "success",
