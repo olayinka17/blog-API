@@ -5,7 +5,7 @@ const setAuthorIds = (req, res, next) => {
 };
 
 const getMyBlogs = (req, res, next) => {
-  req.filter = { author: req.user.id };
+  req.filter = { authorDetails: req.user.id };
   next();
 };
 const getBlogs = (req, res, next) => {
