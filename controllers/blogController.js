@@ -43,7 +43,6 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
     pipeline.push({ $match: matchFilter });
   }
   pipeline.push(...features.pipeline);
-  console.log(matchFilter);
   const blogs = await Blog.aggregate(pipeline);
   res.status(200).json({
     status: "success",

@@ -1,4 +1,3 @@
-const { ObjectId } = require("mongodb");
 const setAuthorIds = (req, res, next) => {
   const tasksInfo = req.body;
   if (!tasksInfo.author) tasksInfo.author = req.user.id;

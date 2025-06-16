@@ -44,7 +44,7 @@ describe("testing the blog's endpoints", () => {
     expect(response.body.data).toHaveProperty("blog.state", "draft");
   });
 
-  it("should return 200", async () => {
+  it("should return an array of empty blogs", async () => {
     await request(app)
       .post("/api/v1/blogs/")
       .set("authorization", `Bearer ${token}`)
@@ -148,5 +148,28 @@ describe("testing the blog's endpoints", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("status", "success");
+  });
+
+  it("should return 200", async () => {
+    await request(app)
+      .post("/api/v1/blogs/")
+      .set("authorization", `Bearer ${token}`)
+      .send({
+        title: "i really dont know",
+        body: "okayed",
+        tags: "ok",
+        description: "i dont know the details of this post",
+        state: "published",
+      });
+
+    const response = await request(app).get("/api/v1/blogs?author=muel");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("status", "success");
+    expect(response.body).toHaveProperty("data");
+    expect(response.body.data.blogs[0]).toHaveProperty(
+      "authorDetails.first_name",
+      "muel"
+    );
   });
 });
