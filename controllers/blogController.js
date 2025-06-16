@@ -4,12 +4,10 @@ const CatchAsync = require("../utils/CatchAsync");
 const CustomError = require("../utils/CustomError");
 
 const getAllBlogs = CatchAsync(async (req, res, next) => {
-  // let filter = filter;
-  // if (req.filter) {
-  //   const matchFilter = req.filter || {};
-  // }
+  const matchFilter = req.filter || {};
   const features = new APIFeatures(req.query).filter().sort().paginate();
-  const blogs = await Blog.aggregate([
+
+  const pipeline = [
     {
       $lookup: {
         from: "users",
@@ -23,23 +21,18 @@ const getAllBlogs = CatchAsync(async (req, res, next) => {
             },
           },
         ],
-        // localField: "author",
-        // foreignField: "_id",
         as: "authorDetails",
       },
     },
     { $unwind: "$authorDetails" },
-    // { $match: matchFilter },
-    ...features.pipeline,
-  ]);
-  console.log([
-    {
-      $lookup: {},
-    },
-    { $unwind: "$authorDetails" },
-    // { $match: matchFilter },
-    ...features.pipeline,
-  ]);
+  ];
+
+  if (matchFilter && Object.keys(matchFilter).length > 0) {
+    pipeline.push({ $match: matchFilter });
+  }
+  pipeline.push(...features.pipeline);
+
+  const blogs = await Blog.aggregate(pipeline);
   res.status(200).json({
     status: "success",
     sum: blogs.length,
